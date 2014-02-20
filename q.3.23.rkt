@@ -30,32 +30,35 @@
                      (lambda (new-item)
                        (set-mcdr! rear-ptr new-item)
                        (set! rear-ptr new-item))))
-    (define (delete-queue!)
+    (define (delete-queue! proc)
       (if (empty-queue?)
-          (error "DELETE called with an empty queue." queue)
+          (error "DELETE called with an empty queue." front-ptr)
           (begin 
-            (set! front-ptr (mcdr front-ptr))
+            (proc)
             front-ptr)))
     (define (front-delete-queue!)
       (delete-queue! (lambda ()
                        (set! front-ptr (mcdr front-ptr)))))
     (define (previous-pair ls target)
       (cond ((null? ls) false)
-            ((eq? (cdr ls) target) ls)
+            ((eq? (mcdr ls) target) ls)
             (else
-             (previous-pair (cdr ls) target))))
+             (previous-pair (mcdr ls) target))))
     (define (rear-delete-queue!)
       (delete-queue! (lambda ()
                        (let ((pre-pair (previous-pair front-ptr rear-ptr)))
-                         (set-mcdr! pre-pair '())
-                         (set! rear-ptr pre-pair)))))
+                         (if pre-pair
+                             (begin
+                               (set-mcdr! pre-pair '())
+                               (set! rear-ptr pre-pair))
+                             (set! front-ptr '()))))))
                          
     (define (dispatch m) 
       (cond ((eq? m 'empty-queue?) empty-queue?)
-            ((eq? m 'front-insert-queue!) insert-queue!)
-            ((eq? m 'rear-insert-queue!) insert-queue!)
-            ((eq? m 'front-delete-queue!) (delete-queue!))
-            ((eq? m 'rear-delete-queue!) (delete-queue!))
+            ((eq? m 'front-insert-queue!) front-insert-queue!)
+            ((eq? m 'rear-insert-queue!) rear-insert-queue!)
+            ((eq? m 'front-delete-queue!) (front-delete-queue!))
+            ((eq? m 'rear-delete-queue!) (rear-delete-queue!))
             (else 
              (error "undefined operation -- DISPATCH" m))))
     dispatch))
@@ -65,5 +68,29 @@
 (define (front-delete-queue! queue) (queue 'front-delete-queue!))
 (define (rear-delete-queue! queue) (queue 'rear-delete-queue!))
 
-(define q (make-queue))
 
+;;test
+(define (exec-commands ls)
+  (if (not (null? ls))
+      (begin
+        (display (format "> ~a\n" (car ls)))
+        (display 
+         (with-handlers ([exn:fail?
+                          (lambda (e) (display e)(newline))])
+           (eval (car ls))))
+        (newline)
+        (exec-commands (cdr ls)))))
+(exec-commands   
+ '((define q (make-dequeue))
+   (front-insert-queue! q 1)
+   (rear-insert-queue! q 2)
+   (front-insert-queue! q 0)
+   (rear-insert-queue! q 3)
+   (front-delete-queue! q)
+   (front-delete-queue! q)
+   (rear-delete-queue! q)
+   (rear-delete-queue! q)
+   (rear-delete-queue! q)
+   (rear-insert-queue! q 3)
+   (front-delete-queue! q)
+   (front-delete-queue! q)))
