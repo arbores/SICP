@@ -1,0 +1,6 @@
+#lang s-exp framework/keybinding-lang
+(keybinding "m:/"
+            (λ (editor evt)
+              (if (is-a? editor text:autocomplete<%>)
+                  (send editor auto-complete)
+                  #f)))
