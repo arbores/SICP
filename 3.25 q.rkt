@@ -8,11 +8,7 @@
           (display (eval (car commands))))
         (newline)
         (exec-commands (cdr commands)))))
-(define (accumulate op initial sequence)
-  (if (null? sequence)
-      initial
-      (op (car sequence) 
-          (accumulate op initial (cdr sequence)))))
+
 (define (mcaar x) (mcar (mcar x)))
 (define (mlist . ls)
   (if (null? ls)
