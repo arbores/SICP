@@ -1,0 +1,10 @@
+(define (or-gate o1 o2 output)
+  (let ((a1 (make-wire))
+        (a2 (make-wire))
+        (a-out (make-wire)))
+    (inverter o1 a1)
+    (inverter o2 a1)
+    (and-gate a1 a2 a-out)
+    (inverter a-out output)
+    'ok))
+            
