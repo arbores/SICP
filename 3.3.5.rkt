@@ -106,7 +106,7 @@
   (define (process-new-value)
     (cond ((or (and (has-value? m1) (= (get-value m1) 0))
                (and (has-value? m2) (= (get-value m2) 0)))
-           (set-value! product 0))
+           (set-value! product 0 me))  ;;product と m1 に set-value! したとき衝突エラーでて、原因がわかりにくい
           ((and (has-value? m1) (has-value? m2))
            (set-value! product 
                        (* (get-value m1) (get-value m2))
@@ -207,4 +207,14 @@
    (set-value! F 212 'user)
    (forget-value! C 'user)
    (set-value! F 212 'user)
+   
+   (define a (make-connector))
+   (define b (make-connector) )
+   (define c (make-connector))
+   (multiplier a b c)
+   (probe "a" a)
+   (probe "b" b)
+   (probe "c" c)
+   (set-value! c 100 'user)
+   (set-value! a 0 'user)
    ))
