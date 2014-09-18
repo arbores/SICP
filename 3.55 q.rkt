@@ -5,8 +5,6 @@
 
 (define (partial-sums stream)
   (stream-cons (stream-car stream)
-               (partial-sums
-                (stream-cons (+ (stream-car stream)
-                                (stream-car (stream-cdr stream)))
-                             (stream-cdr (stream-cdr stream))))))
+               (add-streams (stream-cdr stream)
+                            (partial-sums stream))))
 (stream-head (partial-sums integers) 10)

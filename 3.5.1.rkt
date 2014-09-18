@@ -83,7 +83,7 @@
   (let iter((primes (stream-prime)))
     (cond ((= x (stream-car primes)) true)
           ((< x (stream-car primes)) false)
-          (else (stream-cdr primes)))))
+          (else (iter (stream-cdr primes))))))
 
 (define (stream-factorial n)
   (stream-cons (expt n 2)
@@ -107,7 +107,7 @@
                (iter 1 1)))
 
 (define (stream-head s n)
-  (if (>= 0 n)
+  (if (or (<= n 0) (stream-null? s))
       '()
       (cons (stream-car s)
             (stream-head (stream-cdr s)

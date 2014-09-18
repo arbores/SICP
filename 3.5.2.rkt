@@ -36,6 +36,7 @@
       (stream-cons 
        (apply proc (map stream-car streams))
        (apply stream-map proc (map stream-cdr streams)))))
+
 (define ones (stream-cons 1 ones))
 
 (define (add-streams s1 s2)
@@ -55,6 +56,18 @@
 
 (define double (stream-cons 1 (scale-stream double 2)))
 
+(define primes 
+  (stream-cons 
+   2
+   (stream-filter primes? (integers-starting-from 3))))
+
+(define (square x) (* x x))
+(define (primes? n)
+  (define (iter ps)
+    (cond ((> (square (stream-car ps)) n) true)
+          ((divisible? n (stream-car ps)) false)
+          (else (iter (stream-cdr ps)))))
+  (iter primes))
 
 ;;
 (exec-commands 
@@ -64,5 +77,6 @@
    (stream-head integers2 10)
    (stream-head fibs2 10)
    (stream-head double 10)
+   (stream-head primes 10)
    ))
                
